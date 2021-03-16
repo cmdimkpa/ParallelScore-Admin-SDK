@@ -1,0 +1,16 @@
+{
+  "name": "platform-sdk",
+  "version": "1.0.0",
+  "description": "ParallelScore Platform SDK for JavaScript",
+  "main": "platform-sdk.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Monty Dimkpa",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "form-data": "^4.0.0",
+    "lodash": "^4.17.21"
+  }
+}
