@@ -18,7 +18,10 @@ const BaseProfileMap = {
     userdata : null
 }
 
-const loadBalancerHost = 'https://platform.parallelscore.io';
+const loadBalancerHost = (n=6) => {
+  let m = Math.floor(Math.random()*n) + 1;
+  return `https://pscore-sandbox-${m}.herokuapp.com`;
+}
 
 const baseHeaders = {
     options : {
@@ -141,7 +144,7 @@ class ProfileReader extends QueryStringBuilder {
         this.ADMIN_TOKEN = ADMIN_TOKEN;
     }
     async newPageReadToken (){
-        let exchangeURL = `${loadBalancerHost}/utils/tokenExchange?adminToken=${this.ADMIN_TOKEN}`;
+        let exchangeURL = `${loadBalancerHost()}/utils/tokenExchange?adminToken=${this.ADMIN_TOKEN}`;
         let network = new NetworkService(exchangeURL, 'get');
         let response = await network.call();
         this.PageReadToken = response.data;
@@ -157,7 +160,7 @@ class ProfileReader extends QueryStringBuilder {
             this.setKeysOnly(true);
             resourceQueryString = this.generateQueryString();
         }
-        this.profileURL = `${loadBalancerHost}/utils/inspect/${this.PageReadToken}/${this.username}${resourceQueryString}${appQueryString}`;
+        this.profileURL = `${loadBalancerHost()}/utils/inspect/${this.PageReadToken}/${this.username}${resourceQueryString}${appQueryString}`;
     }
     async readProfile (){
         this.updateProfileURL();
@@ -207,7 +210,7 @@ class PlatformConnection extends TokenGenerator {
         return await this.newSession(username, app);
     }
     async signup (firstName, lastName, password, source='platform', role='user'){
-        let url = `${loadBalancerHost}/signup/form?app=${this.app}`;
+        let url = `${loadBalancerHost()}/signup/form?app=${this.app}`;
         let network = new NetworkService(url, 'post', {
             username : this.username,
             first_name : firstName,
@@ -221,7 +224,7 @@ class PlatformConnection extends TokenGenerator {
         return response;
     }
     async login (password){
-        let url = `${loadBalancerHost}/login/user?app=${this.app}`;
+        let url = `${loadBalancerHost()}/login/user?app=${this.app}`;
         let network = new NetworkService(url, 'post', {
             username : this.username,
             password : password
@@ -231,12 +234,12 @@ class PlatformConnection extends TokenGenerator {
         return response;
     }
     async logout (){
-        let url = `${loadBalancerHost}/logout/${this.profile.username}/${this.profile.user_id}?app=${this.app}`;
+        let url = `${loadBalancerHost()}/logout/${this.profile.username}/${this.profile.user_id}?app=${this.app}`;
         let network = new NetworkService(url, 'put')
         return await network.call();
     }
     async changePassword (password, newPassword){
-        let url = `${loadBalancerHost}/profile/changePassword/${this.profile.username}?app=${this.app}`;
+        let url = `${loadBalancerHost()}/profile/changePassword/${this.profile.username}?app=${this.app}`;
         let network = new NetworkService(url, 'put', {
             password : password,
             new_password : newPassword
@@ -252,7 +255,7 @@ class PlatformConnection extends TokenGenerator {
     }
     async uploadDocuments (targetBucketCode, virtualLocation, virtualCategory, virtualIdentifier, docKey, doc, filePaths=[]){
         if (targetBucketCode && virtualLocation && virtualCategory && virtualIdentifier && docKey && doc){
-            let url = `${loadBalancerHost}/utils/upload/${targetBucketCode}/noAuth/${this.profile.user_id}?app=${this.app}`;
+            let url = `${loadBalancerHost()}/utils/upload/${targetBucketCode}/noAuth/${this.profile.user_id}?app=${this.app}`;
             let upload_json = {}
             upload_json[docKey] = doc;
             var fdata = new FormData();
@@ -271,7 +274,7 @@ class PlatformConnection extends TokenGenerator {
         }
     }
     async downloadDocuments (){
-        let url = 'http://bus.parallelscore.io:4100/clipboard/get';
+        let url = 'http://54.198.118.116:4100/clipboard/get';
         let constraints = {
             context : this.app,
             serial : this.profile.user_id
